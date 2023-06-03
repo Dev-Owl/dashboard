@@ -68,7 +68,7 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   /// In this case, if there is more than one possibility, it is placed in
   /// the largest form.
   void add(T item, {bool mountToTop = true}) {
-    if (_isAttached) {
+    if (isAttached) {
       _items[item.identifier] = item;
       _layoutController!.add(item, mountToTop);
       itemStorageDelegate?._onItemsAdded(
@@ -92,7 +92,7 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   /// In this case, if there is more than one possibility, it is placed in
   /// the largest form.
   void addAll(List<T> items, {bool mountToTop = true}) {
-    if (_isAttached) {
+    if (isAttached) {
       _items.addAll(
           items.asMap().map((key, value) => MapEntry(value.identifier, value)));
       _layoutController!.addAll(items);
@@ -107,7 +107,7 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
 
   /// Delete an item from Dashboard.
   void delete(String id) {
-    if (_isAttached) {
+    if (isAttached) {
       itemStorageDelegate?._onItemsDeleted(
           [_getItemWithLayout(id)], _layoutController!.slotCount);
       _layoutController!.delete(id);
@@ -119,7 +119,7 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
 
   /// Delete multiple items from Dashboard.
   void deleteAll(List<String> ids) {
-    if (_isAttached) {
+    if (isAttached) {
       itemStorageDelegate?._onItemsDeleted(
           ids.map((e) => _getItemWithLayout(e)).toList(),
           _layoutController!.slotCount);
@@ -136,7 +136,7 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   }
 
   T _getItemWithLayout(String id) {
-    if (!_isAttached) throw Exception("Not Attached");
+    if (!isAttached) throw Exception("Not Attached");
     return _items[id]!..layoutData = _layoutController!._layouts![id]!.origin;
   }
 
@@ -196,12 +196,13 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
 
   ValueNotifier<AsyncSnapshot>? _asyncSnap;
 
-  bool get _isAttached => _layoutController != null;
+  bool get isAttached => _layoutController != null;
 
   _DashboardLayoutController? _layoutController;
 
   void _attach(_DashboardLayoutController layoutController) {
     _layoutController = layoutController;
+    notifyListeners();
   }
 
 // bool trySlideToTop(String id) {
