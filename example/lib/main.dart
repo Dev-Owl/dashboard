@@ -176,6 +176,19 @@ class _DashboardWidgetState extends State<DashboardWidget> {
               },
               icon: const Icon(Icons.add)),
           IconButton(
+            onPressed: () {
+              // test to see if add is also update, always move first itme right
+              final item = storage.firstItem;
+              item.layoutData = item.layoutData
+                  .copyWithStarts(startX: item.layoutData.startX + 1);
+              itemController.add(item,
+                  triggerChangeEvent: false, mountToTop: false);
+            },
+            icon: const Icon(
+              Icons.arrow_right_alt,
+            ),
+          ),
+          IconButton(
               onPressed: () {
                 itemController.isEditing = !itemController.isEditing;
                 setState(() {});

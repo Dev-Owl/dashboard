@@ -334,6 +334,9 @@ class MyItemStorage extends DashboardItemStorageDelegate<ColoredDashboardItem> {
 
   Map<int, Map<String, ColoredDashboardItem>>? _localItems;
 
+  ColoredDashboardItem get firstItem =>
+      _localItems!.entries.first.value.entries.first.value;
+
   @override
   FutureOr<List<ColoredDashboardItem>> getAllItems(int slotCount) {
     try {
