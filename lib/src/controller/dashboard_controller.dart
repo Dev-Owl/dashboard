@@ -67,12 +67,16 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   /// [Dashboard.shrinkToPlace] is true, it is tried to be placed by shrinking.
   /// In this case, if there is more than one possibility, it is placed in
   /// the largest form.
-  void add(T item, {bool mountToTop = true}) {
+  void add(T item, {bool mountToTop = true, bool triggerChangeEvent = true}) {
     if (isAttached) {
       _items[item.identifier] = item;
       _layoutController!.add(item, mountToTop);
+
       itemStorageDelegate?._onItemsAdded(
-          [_getItemWithLayout(item.identifier)], _layoutController!.slotCount);
+        [_getItemWithLayout(item.identifier)],
+        _layoutController!.slotCount,
+        triggerChangeEvent: triggerChangeEvent,
+      );
     } else {
       throw Exception("Not Attached");
     }
@@ -91,14 +95,20 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   /// [Dashboard.shrinkToPlace] is true, it is tried to be placed by shrinking.
   /// In this case, if there is more than one possibility, it is placed in
   /// the largest form.
-  void addAll(List<T> items, {bool mountToTop = true}) {
+  void addAll(
+    List<T> items, {
+    bool mountToTop = true,
+    bool triggerChangeEvent = true,
+  }) {
     if (isAttached) {
       _items.addAll(
           items.asMap().map((key, value) => MapEntry(value.identifier, value)));
       _layoutController!.addAll(items);
       itemStorageDelegate?._onItemsAdded(
-          items.map((e) => _getItemWithLayout(e.identifier)).toList(),
-          _layoutController!.slotCount);
+        items.map((e) => _getItemWithLayout(e.identifier)).toList(),
+        _layoutController!.slotCount,
+        triggerChangeEvent: triggerChangeEvent,
+      );
     } else {
       throw Exception("Not Attached");
     }
@@ -106,10 +116,16 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   }
 
   /// Delete an item from Dashboard.
-  void delete(String id) {
+  void delete(
+    String id, {
+    bool triggerChangeEvent = true,
+  }) {
     if (isAttached) {
       itemStorageDelegate?._onItemsDeleted(
-          [_getItemWithLayout(id)], _layoutController!.slotCount);
+        [_getItemWithLayout(id)],
+        _layoutController!.slotCount,
+        triggerChangeEvent: triggerChangeEvent,
+      );
       _layoutController!.delete(id);
       _items.remove(id);
     } else {
@@ -118,11 +134,16 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   }
 
   /// Delete multiple items from Dashboard.
-  void deleteAll(List<String> ids) {
+  void deleteAll(
+    List<String> ids, {
+    bool triggerChangeEvent = true,
+  }) {
     if (isAttached) {
       itemStorageDelegate?._onItemsDeleted(
-          ids.map((e) => _getItemWithLayout(e)).toList(),
-          _layoutController!.slotCount);
+        ids.map((e) => _getItemWithLayout(e)).toList(),
+        _layoutController!.slotCount,
+        triggerChangeEvent: triggerChangeEvent,
+      );
       _layoutController!.deleteAll(ids);
       _items.removeWhere((k, v) => ids.contains(k));
     } else {
@@ -131,8 +152,13 @@ class DashboardItemController<T extends DashboardItem> with ChangeNotifier {
   }
 
   /// Clear all items from Dashboard.
-  void clear() {
-    return deleteAll(items);
+  void clear({
+    bool triggerChangeEvent = true,
+  }) {
+    return deleteAll(
+      items,
+      triggerChangeEvent: triggerChangeEvent,
+    );
   }
 
   T _getItemWithLayout(String id) {

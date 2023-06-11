@@ -87,7 +87,11 @@ abstract class DashboardItemStorageDelegate<T extends DashboardItem> {
   }
 
   ///
-  FutureOr<void> _onItemsAdded(List<T> items, int slotCount) {
+  FutureOr<void> _onItemsAdded(
+    List<T> items,
+    int slotCount, {
+    bool triggerChangeEvent = true,
+  }) {
     if (cacheItems) {
       _items.forEach((key, value) {
         for (var i in items) {
@@ -98,12 +102,15 @@ abstract class DashboardItemStorageDelegate<T extends DashboardItem> {
         }
       });
     }
-
-    return onItemsAdded(items, slotCount);
+    if (triggerChangeEvent) return onItemsAdded(items, slotCount);
   }
 
   ///
-  FutureOr<void> _onItemsDeleted(List<T> items, int slotCount) {
+  FutureOr<void> _onItemsDeleted(
+    List<T> items,
+    int slotCount, {
+    bool triggerChangeEvent = true,
+  }) {
     if (cacheItems) {
       _items.forEach((key, value) {
         for (var i in items) {
@@ -111,7 +118,7 @@ abstract class DashboardItemStorageDelegate<T extends DashboardItem> {
         }
       });
     }
-    return onItemsDeleted(items, slotCount);
+    if (triggerChangeEvent) return onItemsDeleted(items, slotCount);
   }
 
   /// [getAllItems] will call if necessary. If your item getter is not Future,
