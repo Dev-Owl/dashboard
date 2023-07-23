@@ -3,6 +3,11 @@ part of dashboard;
 ///
 typedef DashboardItemBuilder<T extends DashboardItem> = Widget Function(T item);
 
+typedef WidgetEditModeControllsCallback = Widget Function(
+  Widget child,
+  String currentItemId,
+);
+
 /// A list of widget arranged with hand or initially.
 ///
 /// [Dashboard] is scrolling widget that contains items which can
@@ -24,35 +29,38 @@ typedef DashboardItemBuilder<T extends DashboardItem> = Widget Function(T item);
 /// This controller is also used to add/delete widget and handle layout changes.
 class Dashboard<T extends DashboardItem> extends StatefulWidget {
   /// A list of widget arranged with hand or initially.
-  Dashboard(
-      {Key? key,
-      required this.itemBuilder,
-      required this.dashboardItemController,
-      this.slotCount = 8,
-      this.scrollController,
-      this.physics,
-      this.dragStartBehavior,
-      this.scrollBehavior,
-      this.cacheExtend = 500,
-      this.verticalSpace = 8,
-      this.horizontalSpace = 8,
-      this.padding = const EdgeInsets.all(0),
-      this.shrinkToPlace = true,
-      this.slideToTop = true,
-      this.slotAspectRatio,
-      this.slotHeight,
-      EditModeSettings? editModeSettings,
-      this.textDirection = TextDirection.ltr,
-      this.errorPlaceholder,
-      this.loadingPlaceholder,
-      this.emptyPlaceholder,
-      this.absorbPointer = true,
-      this.animateEverytime = true,
-      this.itemStyle = const ItemStyle()})
-      : assert((slotHeight == null && slotAspectRatio == null) ||
+  Dashboard({
+    Key? key,
+    required this.itemBuilder,
+    required this.dashboardItemController,
+    this.slotCount = 8,
+    this.scrollController,
+    this.physics,
+    this.dragStartBehavior,
+    this.scrollBehavior,
+    this.cacheExtend = 500,
+    this.verticalSpace = 8,
+    this.horizontalSpace = 8,
+    this.padding = const EdgeInsets.all(0),
+    this.shrinkToPlace = true,
+    this.slideToTop = true,
+    this.slotAspectRatio,
+    this.slotHeight,
+    EditModeSettings? editModeSettings,
+    this.textDirection = TextDirection.ltr,
+    this.errorPlaceholder,
+    this.loadingPlaceholder,
+    this.emptyPlaceholder,
+    this.absorbPointer = true,
+    this.animateEverytime = true,
+    this.itemStyle = const ItemStyle(),
+    this.widgetEditModeControllsCallback,
+  })  : assert((slotHeight == null && slotAspectRatio == null) ||
             !(slotHeight != null && slotAspectRatio != null)),
         editModeSettings = editModeSettings ?? EditModeSettings(),
         super(key: key);
+
+  final WidgetEditModeControllsCallback? widgetEditModeControllsCallback;
 
   /// [slotAspectRatio] determines slots height. Slot width determined by
   /// viewport width and [slotCount].
@@ -200,13 +208,15 @@ class _DashboardState<T extends DashboardItem> extends State<Dashboard<T>>
   @override
   void initState() {
     _layoutController = _DashboardLayoutController<T>(
-        itemController: widget.dashboardItemController,
-        animateEverytime: widget.animateEverytime,
-        axis: Axis.vertical,
-        shrinkOnMove: widget.editModeSettings.shrinkOnMove,
-        shrinkToPlace: widget.shrinkToPlace,
-        slideToTop: widget.slideToTop,
-        slotCount: widget.slotCount);
+      itemController: widget.dashboardItemController,
+      animateEverytime: widget.animateEverytime,
+      axis: Axis.vertical,
+      shrinkOnMove: widget.editModeSettings.shrinkOnMove,
+      shrinkToPlace: widget.shrinkToPlace,
+      slideToTop: widget.slideToTop,
+      slotCount: widget.slotCount,
+      editModeControllsCallback: widget.widgetEditModeControllsCallback,
+    );
     _layoutController.addListener(() {
       setState(() {});
     });

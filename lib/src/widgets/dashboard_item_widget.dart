@@ -206,6 +206,12 @@ class _DashboardItemWidgetState extends State<_DashboardItemWidget>
         onExit: _exit,
         child: result,
       );
+      if (widget.layoutController.editModeControllsCallback != null) {
+        result = widget.layoutController.editModeControllsCallback!(
+          result,
+          widget.itemCurrentLayout.id,
+        );
+      }
     }
 
     var currentEdit = widget.layoutController.editSession?.editing.id ==

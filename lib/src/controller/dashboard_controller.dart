@@ -251,9 +251,12 @@ class _DashboardLayoutController<T extends DashboardItem> with ChangeNotifier {
     required this.animateEverytime,
     required this.shrinkOnMove,
     required Axis axis,
+    this.editModeControllsCallback,
   }) {
     _axis = axis;
   }
+
+  late WidgetEditModeControllsCallback? editModeControllsCallback;
 
   ///
   late DashboardItemController<T> itemController;
@@ -883,20 +886,22 @@ class _DashboardLayoutController<T extends DashboardItem> with ChangeNotifier {
   late bool animateEverytime;
 
   ///
-  void attach(
-      {required Axis axis,
-      required DashboardItemController<T> itemController,
-      required int slotCount,
-      required bool slideToTop,
-      required bool shrinkToPlace,
-      required bool animateEverytime,
-      required bool? shrinkOnMove}) {
+  void attach({
+    required Axis axis,
+    required DashboardItemController<T> itemController,
+    required int slotCount,
+    required bool slideToTop,
+    required bool shrinkToPlace,
+    required bool animateEverytime,
+    required bool? shrinkOnMove,
+  }) {
     this.shrinkOnMove = shrinkOnMove;
     this.itemController = itemController;
     this.slideToTop = slideToTop;
     this.shrinkToPlace = shrinkToPlace;
     this.slotCount = slotCount;
     this.animateEverytime = animateEverytime;
+
     _axis = axis;
 
     _layouts = itemController._items.map((key, value) =>
